@@ -1,0 +1,86 @@
+# # import socket
+
+# # # Tumhara Public IPv4
+# # SERVER_IP = "152.58.70.228"  # Tumhara actual public IP
+# # SERVER_PORT = 12345  # Wahi port jo tum server me use kar rahe ho
+
+# # client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# # client.connect((SERVER_IP, SERVER_PORT))
+
+# # while True:
+# #     msg = input("You: ")
+# #     client.send(msg.encode('utf-8'))
+# #     response = client.recv(1024).decode('utf-8')
+# #     print(f"Friend: {response}")
+
+
+
+# # server.py
+
+# from flask import Flask, render_template, request
+# from flask_socketio import SocketIO, send
+# import socket
+# import threading
+
+# app = Flask(__name__)
+# socketio = SocketIO(app, cors_allowed_origins="*")  # Allow all origins for testing
+
+# clients = set()  # Using a set for Flask WebSockets
+# tcp_clients = []  # Separate list for TCP socket clients
+
+# @app.route('/')
+# def index():
+#     return render_template('index.html')
+
+# @socketio.on('connect')
+# def handle_connect():
+#     clients.add(request.sid)
+#     print(f"Client connected: {request.sid}")
+
+# @socketio.on('disconnect')
+# def handle_disconnect():
+#     clients.discard(request.sid)
+#     print(f"Client disconnected: {request.sid}")
+
+# @socketio.on('message')
+# def handle_message(msg):
+#     print(f"Message received: {msg}")
+#     send(msg, broadcast=True)
+
+# # TCP Socket Server for Python Clients
+# HOST = '0.0.0.0'
+# PORT = 12345  # Change this if needed
+
+# def handle_client(client_socket, address):
+#     print(f"[NEW CONNECTION] {address} connected.")
+#     tcp_clients.append(client_socket)
+
+#     while True:
+#         try:
+#             message = client_socket.recv(1024).decode('utf-8')
+#             if message:
+#                 print(f"{address}: {message}")
+#                 for client in tcp_clients:
+#                     if client != client_socket:
+#                         client.send(message.encode('utf-8'))
+#         except:
+#             tcp_clients.remove(client_socket)
+#             client_socket.close()
+#             break
+
+# def start_socket_server():
+#     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # Fix port reuse issue
+#     server.bind((HOST, PORT))
+#     server.listen(5)
+#     print(f"[SERVER STARTED] Listening on {HOST}:{PORT}")
+
+#     while True:
+#         client_socket, addr = server.accept()
+#         thread = threading.Thread(target=handle_client, args=(client_socket, addr))
+#         thread.start()
+
+# if __name__ == "__main__":
+#     threading.Thread(target=start_socket_server).start()
+#     socketio.run(app, host="0.0.0.0", port=5000, debug=False)  # Change debug=True to debug=False
+
